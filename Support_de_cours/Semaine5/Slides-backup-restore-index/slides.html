@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Grégory Charmier">
+  <title>Module 106 - Interroger, traiter et assurer la maintenance des bases de données</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/solarized.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Module 106 - Interroger, traiter et assurer la maintenance des bases de données</h1>
+  <p class="author">Grégory Charmier</p>
+</section>
+
+<section>
+<section id="sauvegarde-et-restauration" class="title-slide slide level1">
+<h1>Sauvegarde et restauration</h1>
+
+</section>
+<section id="pourquoi-doit-on-faire-des-sauvegardes" class="slide level2">
+<h2>Pourquoi doit-on faire des sauvegardes ?</h2>
+<p>A votre avis ?</p>
+</section>
+<section id="pourquoi-doit-on-faire-des-sauvegardes-1" class="slide level2">
+<h2>Pourquoi doit-on faire des sauvegardes ?</h2>
+<p>Pour lutter contre la perte de données due :</p>
+<ul>
+<li>à des erreurs humaines</li>
+<li>à des pannes matérielles</li>
+<li>à des catastrophes (incendies, innondation, etc)</li>
+<li>à des attaques malveillantes</li>
+</ul>
+</section>
+<section id="stratégie-de-backups" class="slide level2">
+<h2>Stratégie de backups</h2>
+<ul>
+<li>Dans le monde professionnel (mais aussi pour vos données en tant qu’étudiant) les sauvegardes sont capitales !</li>
+<li>La survie de l’entreprise est souvent dépendante de ses données</li>
+<li>et pourtant, une véritable stratégie de sauvegardes (et de restauration !) n’est pas toujours mise en place …</li>
+</ul>
+</section>
+<section id="mysqldump" class="slide level2">
+<h2>Mysqldump</h2>
+<p><strong>Mysqldump</strong> est un utilitaire complet pour <strong>sauvegarder</strong> et <strong>restaurer</strong> des bases de données MySQL ou MariaDB</p>
+</section>
+<section id="mysqldump-1" class="slide level2">
+<h2>Mysqldump</h2>
+<p><strong>Mysqldump</strong> donne la possibilité d’<strong>exporter des bases de données</strong> au format SQL, CSV ou XML</p>
+</section>
+<section id="mysqldump-2" class="slide level2">
+<h2>Mysqldump</h2>
+<ul>
+<li>Dans le cas d’un fichier SQL, il s’agit d’un ensemble d’instructions SQL qui peuvent être utilisées pour recréer la base de données d’origine</li>
+<li>C’est ce que l’on appelle un DUMP</li>
+</ul>
+</section>
+<section id="mysqldump-3" class="slide level2">
+<h2>Mysqldump</h2>
+<p>Voici la syntaxe la plus simple de <strong>mysqldump</strong> :</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysqldump</span> [OPTIONS] base_de_donnees [tables]</span></code></pre></div>
+</section>
+<section id="exemple" class="slide level2">
+<h2>Exemple</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysqldump</span> <span class="at">-u</span> root <span class="at">-p</span> nom_base_de_donnees</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> nom_base_de_donnes.sql</span></code></pre></div>
+</section>
+<section id="restauration" class="slide level2">
+<h2>Restauration</h2>
+<p>Pour <strong>restaurer</strong> une base de donnée</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> root <span class="at">-p</span> <span class="op">&lt;</span> nom_base_de_donnes.sql</span></code></pre></div>
+</section>
+<section id="exercice" class="slide level2">
+<h2>Exercice</h2>
+<ul>
+<li>Sauvegarder une des bases de données de ce cours</li>
+<li>Supprimer la base de données sauvegardées</li>
+<li>Essayer de restaurer la base de données à partir du fichier sql</li>
+<li>Que remarquez vous ?</li>
+</ul>
+<!-- On doit remarquer qu'il manque les commandes USE DATABASE et CREATE DATABASE donc on doit créer la DB et mettre un USE -->
+</section>
+<section id="sauvegarde" class="slide level2">
+<h2>Sauvegarde</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysqldump</span> [OPTIONS] <span class="at">--databases</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">[OPTIONS]</span> DB1 [DB2 DB3…]</span></code></pre></div>
+</section>
+<section id="exemple-1" class="slide level2">
+<h2>Exemple</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysqldump</span> <span class="at">-u</span> root <span class="at">-p</span> <span class="at">--databases</span> nom_base_de_donnees</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> nom_base_de_donnes.sql</span></code></pre></div>
+</section>
+<section id="exercice-1" class="slide level2">
+<h2>Exercice</h2>
+<ul>
+<li>Refaire le même exercice mais en utilisant l’option –databases</li>
+<li>Que remarquez vous ?</li>
+</ul>
+</section>
+<section id="sauvegarder-toutes-les-bases-de-données" class="slide level2">
+<h2>Sauvegarder toutes les bases de données</h2>
+<p>Voici comment <strong>sauvegarder l’intégralité</strong> des bases de données grâce à l’option <strong>-–all-databases</strong> :</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysqldump</span> <span class="at">-u</span> root <span class="at">-p</span> <span class="at">--all-databases</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> base_donnees_complet.sql</span></code></pre></div>
+<p>Cela créé un seul fichier SQL <strong>base_donnees_complet.sql</strong> d’export de toutes les bases de données</p>
+</section>
+<section id="restaurer-une-base-de-donnée-provenant-dun-mysqldump-complet" class="slide level2">
+<h2>Restaurer une base de donnée provenant d’un Mysqldump complet</h2>
+<ul>
+<li>Vous avez sauvegardé <strong>toutes vos bases de données</strong> à l’aide de l’option <strong>-–all-databases</strong></li>
+<li>Vous souhaitez <strong>restaurer une seule base de données</strong> à partir d’un fichier de sauvegarde contenant plusieurs bases de données</li>
+<li>Utilisez l’option <strong>-–one-database</strong> comme indiqué ci-dessous :</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">--one-database</span> nom_base_donnees</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span> base_donnees_complet.sql</span></code></pre></div>
+</section>
+<section id="exercice-2" class="slide level2">
+<h2>Exercice</h2>
+<ul>
+<li>Sauvegarder TOUTES les bases de données de ce cours</li>
+<li>Supprimer la base de données db_films</li>
+<li>Essayer de restaurer la base de données db_films à partir du fichier sql</li>
+<li>Que remarquez vous ?</li>
+</ul>
+<!-- On doit remarquer qu'il faut faire un CREATE DATABASE donc on doit créer la DB  -->
+<p>¨</p>
+</section>
+<section id="condition-de-la-sauvegarde" class="slide level2">
+<h2>Condition de la sauvegarde</h2>
+<p><strong>mysqldump</strong> peut être utilisé à la fois sur :</p>
+<ul>
+<li>des bases de données <strong>au repos</strong></li>
+<li>des bases de données <strong>en exploitation</strong></li>
+</ul>
+</section>
+<section id="bd-au-repos" class="slide level2">
+<h2>BD au repos</h2>
+<ul>
+<li>Si vous arrêtez le serveur MySQL pour effectuer le <strong>mysqldump</strong>, vous êtes sûr qu’il n’y a pas de transactions en cours et que l’état de la base de données est stable</li>
+<li>Cette méthode garantit une cohérence complète sans avoir à verrouiller les tables pendant le dump</li>
+<li>Bien sûr, l’inconvénient majeur est l’indisponibilité du service pendant le processus</li>
+</ul>
+</section>
+<section id="bd-en-exploitation" class="slide level2">
+<h2>BD en exploitation</h2>
+<p>Lorsque vous effectuez un <strong>mysqldump</strong> sur une base de données en exploitation, des modifications peuvent être apportées à la base de données pendant le processus de dump</p>
+</section>
+<section id="bd-en-exploitation-1" class="slide level2">
+<h2>BD en exploitation</h2>
+<p>Pour assurer la <strong>cohérence des données</strong>, <strong>mysqldump</strong> utilise par défaut un <strong>verrou global</strong> (–lock-all-tables) sur l’ensemble de la base de données, ce qui peut interrompre l’écriture pendant la durée de la sauvegarde</p>
+</section>
+<section id="bd-en-exploitation-2" class="slide level2">
+<h2>BD en exploitation</h2>
+<p>Cela peut être inacceptable pour des bases de données avec un fort volume d’écriture ou pour des applications nécessitant une haute disponibilité</p>
+</section>
+<section id="bd-en-exploitation-3" class="slide level2">
+<h2>BD en exploitation</h2>
+<ul>
+<li>Si vous utilisez le moteur de stockage InnoDB, vous pouvez utiliser l’option –single-transaction avec mysqldump, qui commencera une transaction avant le dump</li>
+<li>Cela permet de garantir la cohérence des données sans verrouiller l’ensemble de la base de données</li>
+</ul>
+</section>
+<section id="source" class="slide level2">
+<h2>Source</h2>
+<p><a href="https://www.malekal.com/comment-sauvegarder-et-restaurer-des-bases-de-donnees-mysql/" target="_blank">Comment sauvegarder et restaurer des bases de données MySQL avec Mysqldump</a></p>
+</section></section>
+<section>
+<section id="optimisation-des-requêtes-grâce-aux-indexes" class="title-slide slide level1">
+<h1>Optimisation des requêtes grâce aux indexes</h1>
+
+</section>
+<section id="pourquoi-optimiser-nos-requêtes" class="slide level2">
+<h2>Pourquoi optimiser nos requêtes ?</h2>
+<ul>
+<li>Dans ce cours, nous avons travaillé avec des bases de données minuscules installées sur des serveurs locaux</li>
+<li>Nous sommes donc dans des conditions très éloignées du monde professionnel</li>
+</ul>
+</section>
+<section id="dans-le-monde-professionnel" class="slide level2">
+<h2>Dans le monde professionnel</h2>
+<ul>
+<li>Les bases de données auront beaucoup plus de données</li>
+<li>Les données transiteront probablement par le réseau</li>
+<li>Des requêtes seront exécutées des centaines de fois par de nombreux utilisateurs</li>
+</ul>
+<p>=&gt; Les questions de performance seront au rendez-vous !</p>
+</section>
+<section id="bonne-pratique---attention-au-select" class="slide level2">
+<h2>Bonne pratique - Attention au SELECT *</h2>
+<ul>
+<li><strong>SELECT *</strong> est pratique pour tester en phase de développement</li>
+<li>Il est à <strong>bannir en production</strong> !</li>
+</ul>
+<p>=&gt; Toutes les données du <strong>SELECT</strong> sont chargées en RAM et transitent sur le réseau !</p>
+</section>
+<section id="comment-trouver-les-données" class="slide level2">
+<h2>Comment trouver les données</h2>
+<ul>
+<li>Chercher une information bien précise dans une immense table, c’est très compliqué !</li>
+<li>Mais cela l’est un peu moins si on est <strong>méthodique</strong></li>
+<li>Pour MySQL, c’est tout autant compliqué !</li>
+</ul>
+</section>
+<section id="les-structures-de-données" class="slide level2">
+<h2>Les structures de données</h2>
+<ul>
+<li>En informatique, il existe des <strong>structures de données</strong> permettant <strong>d’accélérer la recherche</strong> dans les données.</li>
+<li>Dans le cadre des SDBDR, on appelle cela des <strong>INDEXES</strong></li>
+</ul>
+</section>
+<section id="le-b-tree" class="slide level2">
+<h2>Le B-Tree</h2>
+<p>Le B-Tree est une <strong>structure de données</strong> couramment utilisée dans les systèmes de gestion de bases de données et les systèmes de fichiers pour stocker et <strong>gérer de grandes quantités de données</strong></p>
+</section>
+<section id="le-b-tree-1" class="slide level2">
+<h2>Le B-Tree</h2>
+<p>Les <strong>index</strong> dans de nombreux systèmes de bases de données, y compris MySQL, sont souvent mis en œuvre à l’aide de B-Trees.</p>
+</section>
+<section id="le-b-tree-2" class="slide level2">
+<h2>Le B-Tree</h2>
+<ul>
+<li>Un B-Tree est un <strong>arbre auto-équilibré</strong> dans lequel chaque nœud contient plusieurs clés et pointeurs</li>
+<li>La spécificité de cette structure est que <strong>toutes les feuilles de l’arbre sont à la même profondeur</strong>, garantissant un <strong>temps d’accès uniforme</strong></li>
+</ul>
+</section>
+<section id="le-b-tree-par-lexemple" class="slide level2">
+<h2>Le B-Tree par l’exemple</h2>
+<ul>
+<li>Imaginons que vous ayez un système de bibliothèque</li>
+<li>Nous voulons indexer les livres par leur numéro ISBN pour faciliter la recherche</li>
+<li>Prenons les numéros ISBN simplifiés suivants: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.</li>
+<li>Nous allons construire un B-Tree</li>
+</ul>
+</section>
+<section id="le-b-tree-3" class="slide level2">
+<h2>Le B-Tree</h2>
+<p><img data-src="./images/b-tree-example.png" style="width:80.0%" /></p>
+</section>
+<section id="le-b-tree-4" class="slide level2">
+<h2>Le B-Tree</h2>
+<ul>
+<li>Si nous cherchions le livre avec l’ISBN 5</li>
+<li>nous commencerions par la racine</li>
+<li>puisque 5 est plus grand que 4 et plus petit que 7</li>
+<li>nous irions au milieu, où nous trouverions le livre avec l’ISBN 5</li>
+</ul>
+</section>
+<section id="le-b-tree-5" class="slide level2">
+<h2>Le B-Tree</h2>
+<ul>
+<li>Si nous cherchions le livre avec l’ISBN 9</li>
+<li>nous commencerions par la racine</li>
+<li>et puisque 9 est plus grand que 7</li>
+<li>nous irions à droite et trouverions le livre avec l’ISBN 9</li>
+</ul>
+</section>
+<section id="le-b-tree-6" class="slide level2">
+<h2>Le B-Tree</h2>
+<p>Le B-Tree est construit de manière à minimiser le nombre de “sauts” nécessaires pour trouver un élément, ce qui est idéal pour les systèmes de stockage où chaque saut (comme accéder à un bloc de disque différent) peut être coûteux en termes de temps</p>
+</section>
+<section id="inconvénients-des-indexes" class="slide level2">
+<h2>Inconvénients des INDEXES</h2>
+<ul>
+<li>Ils prennent de la place en mémoire</li>
+<li>Ils ralentissent les requêtes d’insertion, modification et suppression</li>
+<li>Car à chaque fois, il faut remettre l’index à jour en plus de la table</li>
+<li>Par conséquent, n’ajoutez pas d’index lorsque ce n’est pas vraiment utile</li>
+</ul>
+</section>
+<section id="comment-créé-un-index" class="slide level2">
+<h2>Comment créé un INDEX ?</h2>
+<p>Pour créer un index, la commande standard est :</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> nom_de_l_index</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> nom_de_la_table (colonne)</span></code></pre></div>
+</section>
+<section id="comment-créé-un-index-composite" class="slide level2">
+<h2>Comment créé un INDEX composite ?</h2>
+<p>Pour créer un index composite, voilà la commande :</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> nom_de_l_index</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> nom_de_la_table (colonne1, <span class="op">..</span>., colonneN)</span></code></pre></div>
+</section>
+<section id="comment-créé-un-index-unique" class="slide level2">
+<h2>Comment créé un INDEX unique ?</h2>
+<p>Sur une colonne dont les valeurs sont uniques, on peut créer un INDEX unique de la manière suivante :</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">UNIQUE</span> <span class="kw">INDEX</span> nom_de_l_index</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> nom_de_la_table (colonne)</span></code></pre></div>
+</section>
+<section id="exercice-3" class="slide level2">
+<h2>Exercice</h2>
+<ul>
+<li>Charger la base de données <strong>db_students</strong></li>
+<li>Cette base de données contient une seule table <strong>Etudiants</strong></li>
+<li>Dans cette table, <strong>sélectionner toutes les colonnes de l’étudiant ayant pour nom “Nom85000”</strong></li>
+<li>En combien de temps cette requête s’est exécutée ?</li>
+<li>Créer un <strong>INDEX</strong> sur la colonne <strong>nom</strong></li>
+<li>Réexécuter la requête et comparer le temps d’exécution</li>
+</ul>
+</section>
+<section id="mysql-créé-certains-index-automatiquement" class="slide level2">
+<h2>MySQL créé certains INDEX automatiquement</h2>
+<ul>
+<li>pour une <strong>clé primaire</strong></li>
+<li>pour une <strong>clé étrangère</strong></li>
+<li>pour un champ <strong>“unique”</strong></li>
+</ul>
+</section>
+<section id="mysql-créé-certains-index-automatiquement-1" class="slide level2">
+<h2>MySQL créé certains INDEX automatiquement</h2>
+<ul>
+<li>Pour les clés primaires et étrangères, cela paraît logique</li>
+<li>En effet, vous allez beaucoup les utiliser dans nos requêtes, pour les jointures par exemple …</li>
+</ul>
+</section>
+<section id="suppression-dun-index" class="slide level2">
+<h2>Suppression d’un INDEX</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">INDEX</span> nom_de_l_index <span class="kw">ON</span> nom_de_la_table;</span></code></pre></div>
+<p>C’est même commande pour les tous types d’index (unique, etc)</p>
+</section>
+<section id="source-1" class="slide level2">
+<h2>SOURCE</h2>
+<p><a href="https://zestedesavoir.com/tutoriels/730/administrez-vos-bases-de-donnees-avec-mysql/949_index-jointures-et-sous-requetes/3935_index/#1-11839_quest-ce-quun-index" target="_blank">quest-ce-quun-index</a></p>
+<!-- Use
+  pandoc -t revealjs -V theme=simple -s -o myslides.html presentation-git.md && chromium "file://$(pwd)/myslides.html?print-pdf"
+
+  pandoc -t revealjs -V theme=simple -V progress=true -V slideNumber=true -V spotlight=true --slide-level=2 -s -o myslides.html presentation-git.md && chromium "file://$(pwd)/myslides.html"
+
+-->
+<style>
+  .reveal h1 { font-size: 2em; }
+  .reveal h2 { font-size: 1.6em; }
+  .reveal h3 { font-size: 1.4em; }
+  .reveal h4 { font-size: 1.2em; }
+  .reveal h5 { font-size: 1.1em; }
+  .border { border: 1px solid #555; }
+  .reveal blockquote { width: 100% }
+  .reveal blockquote:before {
+    display: block;
+    padding-left: 10px;
+    content: "\201C";
+    font-size: 80px;
+    position: absolute;
+    left: -20px;
+    top: -20px;
+    color: #7a7a7a;
+  }
+  .reveal cite:before { content: "\2009 \2015 \2009"; }
+  .reveal cite { font-size: 80%; }
+  .reveal code {
+    width: 110%;
+    background-color: #eee;
+    border-radius: 3px;
+    font-family: courier, monospace;
+    padding: 0 5px;
+    font-size: 1.5em;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+
+  }
+</style>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>

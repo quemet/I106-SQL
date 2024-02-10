@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Grégory Charmier">
+  <title>Module 106 - Interroger, traiter et assurer la maintenance des bases de données</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/solarized.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Module 106 - Interroger, traiter et assurer la maintenance des bases de données</h1>
+  <p class="author">Grégory Charmier</p>
+</section>
+
+<section>
+<section id="module-106" class="title-slide slide level1">
+<h1>Module 106</h1>
+
+</section>
+<section id="contexte-dans-le-plan-de-formation" class="slide level2">
+<h2>Contexte dans le plan de formation</h2>
+<ul>
+<li><strong>Module 162</strong> - Analyser et modéliser des données</li>
+<li><strong>Module 164</strong> - Créer des bases de données et y insérer des données</li>
+<li><strong>Module 106</strong> - Interroger, traiter et assurer la maintenance des bases de données</li>
+</ul>
+</section>
+<section id="identification-du-module" class="slide level2">
+<h2>Identification du module</h2>
+<p><a href="https://eduvaud.sharepoint.com/:b:/s/msteams_d0db31/EUCpy4J6FcdGpDxkaW-sgOEB9MU_ln67yin2p74M4VeqvA?e=FWrwiW" target="_blank">Identification du module</a></p>
+</section>
+<section id="tests---module-106" class="slide level2">
+<h2>Tests - Module 106</h2>
+<ul>
+<li>1er test - 50% - 3 périodes (à valider)</li>
+<li>2ème test - 50% - 3 périodes (à valider)</li>
+</ul>
+</section></section>
+<section>
+<section id="introduction" class="title-slide slide level1">
+<h1>Introduction</h1>
+
+</section>
+<section id="mysql" class="slide level2">
+<h2>MySQL</h2>
+<ul>
+<li>Base de données <strong>relationnelle</strong></li>
+<li><strong>Licence libre</strong> (GPL) ou licence propriétaire (Oracle)</li>
+<li><strong>Multiplateforme</strong> : Windows, Mac ou Linux</li>
+</ul>
+</section>
+<section id="mysql-est-un-sgbdr" class="slide level2">
+<h2>MySQL est un SGBDR</h2>
+<p><strong>SGBDR</strong> : <strong>S</strong>ystème de <strong>G</strong>estion de <strong>B</strong>ase de <strong>D</strong>onnées <strong>R</strong>elationnelles</p>
+</section>
+<section id="sgbdr-rdbms" class="slide level2">
+<h2>SGBDR = RDBMS</h2>
+<p><strong>RDBMS</strong> en anglais pour <strong>R</strong>elational <strong>D</strong>atabase <strong>M</strong>anagement <strong>S</strong>ystem</p>
+</section>
+<section id="mysql-est-un-sgbdr-1" class="slide level2">
+<h2>MySQL est un SGBDR</h2>
+<p>Connaissez vous d’autres SGBDR ?</p>
+</section>
+<section id="mysql-est-un-sgbdr-2" class="slide level2">
+<h2>MySQL est un SGBDR</h2>
+<p>Par exemple : PostgreSQL, Oracle, Microsoft SQL Server, MariaDB, etc</p>
+</section>
+<section id="mysql-est-un-sgbdr-3" class="slide level2">
+<h2>MySQL est un SGBDR</h2>
+<p>MySQL, ce n’est pas <u>uniquement</u> une base de données !</p>
+</section>
+<section id="mysql-est-un-sgbdr-4" class="slide level2">
+<h2>MySQL est un SGBDR</h2>
+<p>MySQL permet de <strong>gérer</strong> les bases de données !</p>
+</section>
+<section id="mysql-est-un-sgbdr-5" class="slide level2">
+<h2>MySQL est un SGBDR</h2>
+<p>MySQL permet de</p>
+<ul>
+<li>gérer les <strong>interrogations</strong> via les requêtes SQL</li>
+<li>gérer la <strong>sécurité</strong> à travers la définition de permissions</li>
+<li>gérer la <strong>cohérence</strong> à travers l’établissement de contraintes</li>
+<li><strong>stockage d’informations</strong> dans des tables en suivant un modèle spécifique : <strong>Le modèle relationnel</strong></li>
+</ul>
+</section>
+<section id="mysql-est-un-sgbdr-6" class="slide level2">
+<h2>MySQL est un SGBDR</h2>
+<ul>
+<li>MySQL est un <strong>serveur</strong> !</li>
+<li>Il nous faut un programme client : Workbench, PHPMyAdmin, etc</li>
+</ul>
+</section>
+<section id="modèle-relationnel" class="slide level2">
+<h2>Modèle relationnel</h2>
+<ul>
+<li>Créé par Edgar Codd</li>
+<li>Théorie mathématique des ensembles</li>
+<li>Algèbre relationnelle</li>
+<li>Traitement logique et abstraite des données</li>
+</ul>
+</section>
+<section id="histoire-de-mysql" class="slide level2">
+<h2>Histoire de MySQL</h2>
+<ul>
+<li>Crée en 1994 en Suède par Michael Widenius (et David Axmark et Allan Larsson)</li>
+<li>Sa 1ère fille s’appelle <strong>My</strong></li>
+<li>Libre, open source et gratuit</li>
+<li>MySQL AB acheté le 16 janvier 2008 par Sun Microsystems puis par <strong>Oracle</strong> en 2009</li>
+</ul>
+</section>
+<section id="histoire-de-mysql-1" class="slide level2">
+<h2>Histoire de MySQL</h2>
+<ul>
+<li>En 2009, Michael Widenius a créé <strong>MariaDB</strong> (sa 2ème fille s’appelle Maria) pour continuer son développement Open Source</li>
+<li>MariaDB est un <strong>fork</strong> de MySQL !</li>
+<li>Dernière version de MySQL : 8</li>
+</ul>
+</section>
+<section id="sql" class="slide level2">
+<h2>SQL</h2>
+<p><strong>S</strong>tructured <strong>Q</strong>uery <strong>L</strong>anguage</p>
+</section>
+<section id="sql-1" class="slide level2">
+<h2>SQL</h2>
+<p>Toutes les bases de données relationnelles fonctionnent avec le <strong>SQL</strong>, mais chacune d’entre elles utilise un dialecte légèrement différent</p>
+</section>
+<section id="sql-2" class="slide level2">
+<h2>SQL</h2>
+<ul>
+<li>Dans ce cours, vous apprendrez les bases du <strong>SQL standard</strong> qui est compris par toutes les bases de données relationnelles</li>
+<li>Grâce au SQL, vous serez en mesure d’effectuer des requêtes dans chaque environnement de base de données</li>
+</ul>
+</section>
+<section id="les-4-sous-langages-sql" class="slide level2">
+<h2>Les 4 sous langages SQL</h2>
+<ul>
+<li>DDL</li>
+<li>DCL</li>
+<li>DML</li>
+<li>TCL</li>
+</ul>
+</section>
+<section id="ddl---data-definition-language" class="slide level2">
+<h2>DDL - Data Definition Language</h2>
+<ul>
+<li>Créer, modifier ou supprimer des éléments de structure de donnée</li>
+<li>ALTER, DROP, CREATE, etc</li>
+</ul>
+</section>
+<section id="dcl---data-control-language" class="slide level2">
+<h2>DCL - Data control language</h2>
+<ul>
+<li>Gère les droits sur les bases de données</li>
+<li>GRANT, REVOKE, etc</li>
+</ul>
+</section>
+<section id="dml---data-manipulation-language" class="slide level2">
+<h2>DML - Data Manipulation Language</h2>
+<ul>
+<li>Sert à interagir avec les données</li>
+<li>SELECT, UPDATE, INSERT, DELETE, etc</li>
+</ul>
+</section>
+<section id="tcl---transaction-control-language" class="slide level2">
+<h2>TCL - Transaction control language</h2>
+<ul>
+<li>Sert à contrôler les transactions</li>
+<li>COMMIT, ROLLEBACK, etc</li>
+</ul>
+</section></section>
+<section>
+<section id="les-requêtes-sql---la-sélection" class="title-slide slide level1">
+<h1>Les requêtes SQL - La sélection</h1>
+
+</section>
+<section id="table-voiture" class="slide level2">
+<h2>Table VOITURE</h2>
+<p><img data-src="./images/select-all.png" style="width:75.0%" /></p>
+<p>Voir le fichier <strong>db_voitures.sql</strong> présent dans votre canal Teams !</p>
+</section>
+<section id="select---obtenir-toutes-les-données" class="slide level2">
+<h2>SELECT - Obtenir toutes les données</h2>
+<p>Sélectionner <strong>toutes</strong> les données !</p>
+</section>
+<section id="select---obtenir-toutes-les-données-1" class="slide level2">
+<h2>SELECT - Obtenir toutes les données</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> voiture;</span></code></pre></div>
+<p><img data-src="./images/select-all.png" style="width:75.0%" /></p>
+</section>
+<section id="select---sélectionnez-une-colonne" class="slide level2">
+<h2>SELECT - Sélectionnez une colonne</h2>
+<p>Sélectionnez <strong>uniquement</strong> les marques des voitures.</p>
+</section>
+<section id="select---sélectionnez-une-colonne-1" class="slide level2">
+<h2>SELECT - Sélectionnez une colonne</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> voiMarque <span class="kw">FROM</span> voiture;</span></code></pre></div>
+<p><img data-src="./images/select-1-colonne.png" style="width:15.0%" /></p>
+</section>
+<section id="select---sélectionnez-plusieurs-colonnes" class="slide level2">
+<h2>SELECT - Sélectionnez plusieurs colonnes</h2>
+<p>Sélectionnez <strong>uniquement</strong> les marques et les modèles des voitures</p>
+</section>
+<section id="select---sélectionnez-plusieurs-colonnes-1" class="slide level2">
+<h2>SELECT - Sélectionnez plusieurs colonnes</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> voiMarque, voiModele <span class="kw">FROM</span> voiture;</span></code></pre></div>
+<p><img data-src="./images/select-2-colonnes.png" style="width:20.0%" /></p>
+</section>
+<section id="select---sélectionnez-seulement-quelques-lignes" class="slide level2">
+<h2>SELECT - Sélectionnez seulement quelques lignes</h2>
+<p>Sélectionnez toutes les colonnes pour les voitures qui ont été produites en 1999</p>
+</section>
+<section id="select---sélectionnez-seulement-quelques-lignes-1" class="slide level2">
+<h2>SELECT - Sélectionnez seulement quelques lignes</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiAnneeProduction <span class="op">=</span> <span class="dv">1999</span>;</span></code></pre></div>
+<p><img data-src="./images/select-seulement-qq-lignes.png" style="width:75.0%" /></p>
+</section>
+<section id="select---opérateurs-conditionnels" class="slide level2">
+<h2>SELECT - Opérateurs conditionnels</h2>
+<p>Outre le signe d’égalité =, il existe d’autres opérateurs conditionnels que vous pouvez utiliser :</p>
+<ul>
+<li>&lt; inférieur à</li>
+<li>&gt; supérieur à</li>
+<li>&lt;= inférieur ou égal</li>
+<li>&gt;= supérieur ou égal</li>
+</ul>
+</section>
+<section id="select---opérateurs-conditionnels-1" class="slide level2">
+<h2>SELECT - Opérateurs conditionnels</h2>
+<p>Sélectionnez toutes les colonnes pour toutes les voitures dont le prix est supérieur à 10 000 $</p>
+</section>
+<section id="select---opérateurs-conditionnels-2" class="slide level2">
+<h2>SELECT - Opérateurs conditionnels</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiPrix <span class="op">&gt;</span> <span class="fl">10000.00</span>;</span></code></pre></div>
+<p><img data-src="./images/select-operateurs-conditionnels.png" style="width:75.0%" /></p>
+</section>
+<section id="select---le-signe-dinégalité" class="slide level2">
+<h2>SELECT - Le signe d’inégalité !=</h2>
+<p>Sélectionnez toutes les colonnes pour les voitures qui n’ont pas été produites en 1999</p>
+</section>
+<section id="select---le-signe-dinégalité-1" class="slide level2">
+<h2>SELECT - Le signe d’inégalité !=</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiAnneeProduction <span class="op">!=</span> <span class="dv">1999</span>;</span></code></pre></div>
+<p><img data-src="./images/select-signe-inegalite.png" style="width:75.0%" /></p>
+</section>
+<section id="opérateurs-conditionnels-et-sélection-de-colonnes" class="slide level2">
+<h2>Opérateurs conditionnels et sélection de colonnes</h2>
+<p>Sélectionnez la marque, le modèle et l’année de production de toutes les voitures dont le prix est inférieur ou égal à 11 300 $</p>
+</section>
+<section id="opérateurs-conditionnels-et-sélection-de-colonnes-1" class="slide level2">
+<h2>Opérateurs conditionnels et sélection de colonnes</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> voiMarque, voiModele, voiAnneeProduction</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiPrix <span class="op">&lt;=</span> <span class="dv">11300</span>;</span></code></pre></div>
+<p><img data-src="./images/Opérateurs%20conditionnels%20et%20sélection%20de%20colonnes.png" style="width:65.0%" /></p>
+</section>
+<section id="opérateurs-logiques---or" class="slide level2">
+<h2>Opérateurs logiques - OR</h2>
+<p>Sélectionnez les identifiants de toutes les voitures qui ont été produites avant 2005 ou dont le prix est inférieur à 10 000 $</p>
+</section>
+<section id="opérateurs-logiques---or-1" class="slide level2">
+<h2>Opérateurs logiques - OR</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> idVoiture</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiAnneeProduction <span class="op">&lt;</span> <span class="dv">2005</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">OR</span> voiPrix <span class="op">&lt;</span> <span class="dv">10000</span>;</span></code></pre></div>
+<p><img data-src="./images/Opérateurs%20logiques%20-%20OR.png" style="width:25.0%" /></p>
+</section>
+<section id="opérateurs-logiques---and" class="slide level2">
+<h2>Opérateurs logiques - AND</h2>
+<p>Sélectionnez les identifiants de toutes les voitures qui ont été produites après 1999 et dont le prix est inférieur à 7 000 $</p>
+</section>
+<section id="opérateurs-logiques---and-1" class="slide level2">
+<h2>Opérateurs logiques - AND</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> idVoiture</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiAnneeProduction <span class="op">&gt;</span> <span class="dv">1999</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> voiPrix <span class="op">&lt;</span> <span class="dv">7000</span>;</span></code></pre></div>
+<p><img data-src="./images/Opérateurs%20logiques%20-%20AND.png" style="width:25.0%" /></p>
+</section>
+<section id="lopérateur-between" class="slide level2">
+<h2>L’opérateur BETWEEN</h2>
+<p>Sélectionnez les identifiants, marques, et modeles de toutes les voitures produites entre 1995 et 2005</p>
+</section>
+<section id="lopérateur-between-1" class="slide level2">
+<h2>L’opérateur BETWEEN</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> idVoiture, voiMarque, voiModele</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiAnneeProduction</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">BETWEEN</span> <span class="dv">1995</span> <span class="kw">AND</span> <span class="dv">2005</span>;</span></code></pre></div>
+<p><img data-src="./images/L&#39;opérateur%20BETWEEN.png" style="width:75.0%" /></p>
+</section>
+<section id="lopérateur-between-2" class="slide level2">
+<h2>L’opérateur BETWEEN</h2>
+<ul>
+<li>Avec MySQL, les deux valeurs des bornes sont <strong>incluses</strong>.</li>
+<li>Ce n’est pas le cas pour d’autres SGBD</li>
+<li>Vérifiez toujours comment BETWEEN fonctionne dans votre base de données.</li>
+</ul>
+</section>
+<section id="opérateurs-logiques---not" class="slide level2">
+<h2>Opérateurs logiques - NOT</h2>
+<p>Sélectionnez les identifiants, marques, et modeles de toutes les voitures sauf celles produites entre 1995 et 2005</p>
+</section>
+<section id="opérateurs-logiques---not-1" class="slide level2">
+<h2>Opérateurs logiques - NOT</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> idVoiture, voiMarque, voiModele</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiAnneeProduction</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="kw">NOT</span> <span class="kw">BETWEEN</span> <span class="dv">1995</span> <span class="kw">AND</span> <span class="dv">2005</span>;</span></code></pre></div>
+<p><img data-src="./images/Opérateurs%20logiques%20-%20NOT.png" style="width:75.0%" /></p>
+</section>
+<section id="ajouter-encore-plus-de-conditions" class="slide level2">
+<h2>Ajouter encore plus de conditions</h2>
+<p>Sélectionnez les identifiants de toutes les voitures qui :</p>
+<ul>
+<li>ont été produites avant 1999 ou après 2005</li>
+<li>et dont le prix est inférieur à 4 000$ ou supérieur à 10 000$</li>
+</ul>
+</section>
+<section id="ajouter-encore-plus-de-conditions-1" class="slide level2">
+<h2>Ajouter encore plus de conditions</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> idVoiture</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> (voiAnneeProduction <span class="op">&lt;</span> <span class="dv">1999</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="kw">OR</span> voiAnneeProduction <span class="op">&gt;</span> <span class="dv">2005</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> (voiPrix <span class="op">&lt;</span> <span class="dv">4000</span> <span class="kw">OR</span> voiPrix <span class="op">&gt;</span> <span class="dv">10000</span>);</span></code></pre></div>
+<p><img data-src="./images/Ajouter%20encore%20plus%20de%20conditions.png" style="width:25.0%" /></p>
+<p>Noter l’utilisation des parenthèses !</p>
+</section>
+<section id="utiliser-du-texte" class="slide level2">
+<h2>Utiliser du texte</h2>
+<p>Notez que lorsque nous travaillons avec des valeurs textuelles (ou des dates), nous utilisons des guillemets simples (’) autour de la valeur.</p>
+</section>
+<section id="utiliser-du-texte-1" class="slide level2">
+<h2>Utiliser du texte</h2>
+<p>Sélectionnez toutes les colonnes de toutes les voitures Ford présentes dans la table</p>
+</section>
+<section id="utiliser-du-texte-2" class="slide level2">
+<h2>Utiliser du texte</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiMarque <span class="op">=</span> <span class="st">&#39;Ford&#39;</span>;</span></code></pre></div>
+<p><img data-src="./images/Utiliser%20du%20texte.png" style="width:75.0%" /></p>
+</section>
+<section id="opérateur-like" class="slide level2">
+<h2>Opérateur LIKE</h2>
+<ul>
+<li>L’opérateur LIKE nous permet d’utiliser % et _ pour créer des motifs correspondant à plusieurs valeurs</li>
+<li>% pour correspondre à n’importe quel nombre de caractères (0 inclus)</li>
+<li>_ pour remplacer un seul caractère</li>
+</ul>
+</section>
+<section id="le-signe-de-pourcentage" class="slide level2">
+<h2>Le signe de pourcentage (%)</h2>
+<p>Sélectionnez les identifiants, marques, et modeles de toutes les voitures dont la marque commence par un F</p>
+</section>
+<section id="le-signe-de-pourcentage-1" class="slide level2">
+<h2>Le signe de pourcentage (%)</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> idVoiture, voiMarque, voiModele</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiMarque <span class="kw">LIKE</span> <span class="st">&#39;F%&#39;</span>;</span></code></pre></div>
+<p><img data-src="./images/Le%20signe%20de%20pourcentage.png" style="width:55.0%" /></p>
+</section>
+<section id="le-signe-de-pourcentage-suite" class="slide level2">
+<h2>Le signe de pourcentage (%) suite</h2>
+<p>Sélectionnez l’identifiant de toutes les voitures dont le modèle se termine par un s</p>
+</section>
+<section id="le-signe-de-pourcentage-suite-1" class="slide level2">
+<h2>Le signe de pourcentage (%) suite</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> idVoiture</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiModele <span class="kw">LIKE</span> <span class="st">&#39;%s&#39;</span>;</span></code></pre></div>
+<p><img data-src="./images/Le%20signe%20de%20pourcentage%20(%)%20suite.png" style="width:25.0%" /></p>
+</section>
+<section id="le-signe-de-soulignement-_" class="slide level2">
+<h2>Le signe de soulignement (_)</h2>
+<ul>
+<li><p>Le signe de soulignement (_) correspond à un seul caractère</p></li>
+<li><p>Exemple : Sélectionnez toutes les colonnes pour les voitures dont la marque correspond à ‘Volk_wagen’</p></li>
+</ul>
+</section>
+<section id="le-signe-de-soulignement-_-1" class="slide level2">
+<h2>Le signe de soulignement (_)</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiMarque <span class="kw">LIKE</span> <span class="st">&#39;Volk_wagen&#39;</span>;</span></code></pre></div>
+<p><img data-src="./images/Le%20signe%20de%20soulignement2.png" style="width:65.0%" /></p>
+</section>
+<section id="aller-plus-loin-avec-like" class="slide level2">
+<h2>Aller plus loin avec LIKE</h2>
+<ul>
+<li>Dans MySQL, le comportement du mot-clé LIKE est déterminé par la collation de la colonne sur laquelle il est utilisé</li>
+<li>Par défaut, la collation dans MySQL est souvent insensible à la casse (par exemple, utf8mb4_general_ci ou latin1_swedish_ci)</li>
+<li>ce qui signifie que la comparaison effectuée avec LIKE sera également insensible à la casse.</li>
+</ul>
+</section>
+<section id="like-et-la-casse" class="slide level2">
+<h2>LIKE et la casse ?</h2>
+<p>Sélectionnez toutes les colonnes pour les voitures dont le modele contient un f <strong>minuscule</strong></p>
+</section>
+<section id="like-et-la-casse-1" class="slide level2">
+<h2>LIKE et la casse ?</h2>
+<p>A votre avis (c’est à dire sans faire la requête), quel est le résultat de la requête suivante :</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiModele <span class="kw">LIKE</span> <span class="st">&#39;%f%&#39;</span>;</span></code></pre></div>
+<p><img data-src="./images/select-all.png" style="width:75.0%" /></p>
+</section>
+<section id="like-et-la-casse-2" class="slide level2">
+<h2>LIKE et la casse ?</h2>
+<p><img data-src="./images/like-casse.png" style="width:75.0%" /></p>
+</section>
+<section id="aller-plus-loin-avec-like-1" class="slide level2">
+<h2>Aller plus loin avec LIKE</h2>
+<ul>
+<li>Dans MySQL, le comportement du mot-clé LIKE est déterminé par la collation de la colonne sur laquelle il est utilisé</li>
+<li>Par défaut, la collation dans MySQL est souvent insensible à la casse (par exemple, utf8mb4_general_ci ou latin1_swedish_ci)</li>
+<li>ce qui signifie que la comparaison effectuée avec LIKE sera également insensible à la casse.</li>
+<li>L’opérateur ILIKE n’existe pas avec MySQL</li>
+</ul>
+</section>
+<section id="aller-plus-loin-avec-like-2" class="slide level2">
+<h2>Aller plus loin avec LIKE</h2>
+<p>Sélectionnez toutes les colonnes pour les voitures dont le modele contient un f <strong>minuscule</strong></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiModele COLLATE utf8mb4_bin <span class="kw">LIKE</span> <span class="st">&#39;%f%&#39;</span>;</span></code></pre></div>
+</section>
+<section id="recherche-de-valeurs-not-null" class="slide level2">
+<h2>Recherche de valeurs NOT NULL</h2>
+<p>Sélectionnez toutes les colonnes pour chaque voiture dont la colonne prix n’a pas de valeur NULL</p>
+</section>
+<section id="recherche-de-valeurs-not-null-1" class="slide level2">
+<h2>Recherche de valeurs NOT NULL</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiPrix <span class="kw">IS</span> <span class="kw">NOT</span> <span class="kw">NULL</span>;</span></code></pre></div>
+<p><img data-src="./images/Recherche%20de%20valeurs%20NOT%20NULL.png" style="width:75.0%" /></p>
+</section>
+<section id="recherche-de-valeurs-null" class="slide level2">
+<h2>Recherche de valeurs NULL</h2>
+<p>Sélectionnez toutes les colonnes pour chaque voiture dont le prix est inconnu (NULL)</p>
+</section>
+<section id="recherche-de-valeurs-null-1" class="slide level2">
+<h2>Recherche de valeurs NULL</h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiPrix <span class="kw">IS</span> <span class="kw">NULL</span>;</span></code></pre></div>
+<p><img data-src="./images/Recherche%20de%20valeurs%20NULL.png" style="width:75.0%" /></p>
+</section>
+<section id="comparaisons-avec-null" class="slide level2">
+<h2>Comparaisons avec NULL</h2>
+<p>Sélectionnez toutes les colonnes des voitures dont la colonne prix est supérieure ou égale à zéro</p>
+</section>
+<section id="comparaisons-avec-null-1" class="slide level2">
+<h2>Comparaisons avec NULL</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiPrix <span class="op">&gt;=</span> <span class="dv">0</span>;</span></code></pre></div>
+<p><img data-src="./images/Comparaisons%20avec%20NULL.png" style="width:75.0%" /></p>
+<p>Notez que l’Opel dont le prix est inconnu ne figure pas dans le résultat</p>
+</section>
+<section id="opérateurs-mathématiques-de-base" class="slide level2">
+<h2>Opérateurs mathématiques de base</h2>
+<ul>
+<li>Sélectionnez toutes les colonnes pour les voitures dont le montant de la taxe est supérieur à 2 000 $</li>
+<li>Le montant de la taxe pour toutes les voitures s’élève à 20 % de leur prix</li>
+<li>Multipliez prix par 0,2 pour obtenir le montant de la taxe</li>
+</ul>
+</section>
+<section id="opérateurs-mathématiques-de-base-1" class="slide level2">
+<h2>Opérateurs mathématiques de base</h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiPrix <span class="op">*</span> <span class="fl">0.2</span> <span class="op">&gt;</span> <span class="dv">2000</span>;</span></code></pre></div>
+<p><img data-src="./images/Opérateurs%20mathématiques%20de%20base.png" style="width:75.0%" /></p>
+</section>
+<section id="exercice" class="slide level2">
+<h2>Exercice :</h2>
+<p>Sélectionnez toutes les colonnes des voitures qui :</p>
+<ul>
+<li>ont été produites entre 1999 et 2005,</li>
+<li>ne sont pas des Volkswagen,</li>
+<li>ont un modèle qui commence par ‘P’ ou ‘F’,</li>
+<li>ont leur prix fixé</li>
+</ul>
+</section>
+<section id="solution-de-lexercice" class="slide level2">
+<h2>Solution de l’exercice :</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> voiture</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> voiAnneeProduction <span class="kw">BETWEEN</span> <span class="dv">1999</span> <span class="kw">AND</span> <span class="dv">2005</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> voiMarque <span class="op">!=</span> <span class="st">&#39;Volkswagen&#39;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> (voiModele <span class="kw">LIKE</span> <span class="st">&#39;P%&#39;</span> <span class="kw">OR</span> voiModele <span class="kw">LIKE</span> <span class="st">&#39;F%&#39;</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> voiPrix <span class="kw">IS</span> <span class="kw">NOT</span> <span class="kw">NULL</span>;</span></code></pre></div>
+<p><img data-src="./images/Solution%20de%20l&#39;exercice.png" style="width:75.0%" /></p>
+</section>
+<section id="source" class="slide level2">
+<h2>SOURCE</h2>
+<p><a href="https://zestedesavoir.com/tutoriels/730/administrez-vos-bases-de-donnees-avec-mysql/948_mysql-et-les-bases-du-langage-sql/3932_selection-de-donnees/" target="_blank">Sélection des données</a></p>
+</section></section>
+<section>
+<section id="agrégation-et-regroupement" class="title-slide slide level1">
+<h1>Agrégation et regroupement</h1>
+
+</section>
+<section id="table-employés" class="slide level2">
+<h2>Table employés</h2>
+<p><img data-src="./images/table-employe.png" style="width:45.0%" /></p>
+</section>
+<section id="table-employés-1" class="slide level2">
+<h2>Table employés</h2>
+<p>Cette table ne respecte pas volontairement :</p>
+<ul>
+<li>les conventions de l’ETML</li>
+<li>les 3 formes normales (pas d’id)</li>
+</ul>
+</section>
+<section id="trier-les-lignes---order-by" class="slide level2">
+<h2>Trier les lignes - ORDER BY</h2>
+<p>Sélectionnez toutes les colonnes de la table <strong>employe</strong> et triez-les en fonction du salaire</p>
+</section>
+<section id="trier-les-lignes---order-by-1" class="slide level2">
+<h2>Trier les lignes - ORDER BY</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> salaire;</span></code></pre></div>
+</section>
+<section id="order-by-avec-conditions" class="slide level2">
+<h2>ORDER BY avec conditions</h2>
+<ul>
+<li>Sélectionnez uniquement les lignes relatives à l’année 2011 dans la table <strong>employe</strong></li>
+<li>Triez-les par salaire</li>
+</ul>
+</section>
+<section id="order-by-avec-conditions-1" class="slide level2">
+<h2>ORDER BY avec conditions</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> annee <span class="op">=</span> <span class="dv">2011</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> salaire;</span></code></pre></div>
+</section>
+<section id="ordre-ascendant-et-descendant" class="slide level2">
+<h2>Ordre ascendant et descendant</h2>
+<ul>
+<li>Sélectionnez toutes les lignes de la table <strong>employe</strong></li>
+<li>Triez-les dans l’ordre décroissant de la colonne <strong>nom</strong></li>
+</ul>
+</section>
+<section id="ordre-ascendant-et-descendant-1" class="slide level2">
+<h2>Ordre ascendant et descendant</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> nom <span class="kw">DESC</span>;</span></code></pre></div>
+</section>
+<section id="trier-par-quelques-colonnes" class="slide level2">
+<h2>Trier par quelques colonnes</h2>
+<ul>
+<li>Sélectionnez toutes les lignes de la table <strong>employe</strong></li>
+<li>Triez-les dans l’ordre croissant par le département</li>
+<li>Puis dans l’ordre décroissant par le salaire</li>
+</ul>
+</section>
+<section id="trier-par-quelques-colonnes-1" class="slide level2">
+<h2>Trier par quelques colonnes</h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> departement, salaire <span class="kw">DESC</span>;</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- Equivalent</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> departement <span class="kw">ASC</span>, salaire <span class="kw">DESC</span>;</span></code></pre></div>
+</section>
+<section id="trier-et-limiter" class="slide level2">
+<h2>Trier et limiter</h2>
+<ul>
+<li>Sélectionnez les employées qui sont dans le top 3 des meilleurs salaires</li>
+<li>Et triez-les dans l’ordre décroissant par le salaire</li>
+</ul>
+</section>
+<section id="trier-et-limiter-1" class="slide level2">
+<h2>Trier et limiter</h2>
+<div class="sourceCode" id="cb28"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> salaire <span class="kw">DESC</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">3</span>;</span></code></pre></div>
+<p>Remarque : Le mot clé LIMIT peut bien sûr s’utiliser seul.</p>
+</section>
+<section id="résultats-en-double" class="slide level2">
+<h2>Résultats en double</h2>
+<ul>
+<li>Sélectionnez la colonne <strong>annee</strong> pour toutes les lignes de la table <strong>employe</strong></li>
+<li>Puis examinez attentivement le résultat</li>
+</ul>
+</section>
+<section id="résultats-en-double-1" class="slide level2">
+<h2>Résultats en double</h2>
+<div class="sourceCode" id="cb29"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> annee <span class="kw">FROM</span> employe;</span></code></pre></div>
+<p><img data-src="./images/doublons.png" style="width:8.0%" /></p>
+</section>
+<section id="sélectionner-des-valeurs-distinctes" class="slide level2">
+<h2>Sélectionner des valeurs distinctes</h2>
+<p>Sélectionnez la colonne <strong>annee</strong> dans la table <strong>employe</strong> de manière à ce que chaque année n’apparaisse qu’une seule fois</p>
+</section>
+<section id="sélectionner-des-valeurs-distinctes-1" class="slide level2">
+<h2>Sélectionner des valeurs distinctes</h2>
+<div class="sourceCode" id="cb30"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">DISTINCT</span> annee <span class="kw">FROM</span> employe;</span></code></pre></div>
+<p><img data-src="./images/distinct.png" style="width:8.0%" /></p>
+</section>
+<section id="sélectionner-des-valeurs-distinctes-dans-certaines-colonnes" class="slide level2">
+<h2>Sélectionner des valeurs distinctes dans certaines colonnes</h2>
+<ul>
+<li>Vérifiez quels postes il y a dans chaque département</li>
+<li>Pour ce faire, sélectionnez les colonnes <strong>departement</strong> et <strong>poste</strong> de la table <strong>employe</strong> et éliminez les doublons !</li>
+</ul>
+</section>
+<section id="sélectionner-des-valeurs-distinctes-dans-certaines-colonnes-1" class="slide level2">
+<h2>Sélectionner des valeurs distinctes dans certaines colonnes</h2>
+<div class="sourceCode" id="cb31"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">DISTINCT</span> departement, poste</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe;</span></code></pre></div>
+</section>
+<section id="compter-les-lignes" class="slide level2">
+<h2>Compter les lignes</h2>
+<p>Compter toutes les lignes de la table <strong>employe</strong></p>
+</section>
+<section id="compter-les-lignes-1" class="slide level2">
+<h2>Compter les lignes</h2>
+<div class="sourceCode" id="cb32"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> employe;</span></code></pre></div>
+</section>
+<section id="compter-les-lignes-ignorer-les-nulls" class="slide level2">
+<h2>Compter les lignes, ignorer les NULLs</h2>
+<ul>
+<li>Vérifiez le nombre de valeurs non NULL dans la colonne poste dans la table <strong>employe</strong></li>
+<li>Nommez la colonne <strong>nb_non_nulle</strong></li>
+</ul>
+</section>
+<section id="compter-les-lignes-ignorer-les-nulls-1" class="slide level2">
+<h2>Compter les lignes, ignorer les NULLs</h2>
+<div class="sourceCode" id="cb33"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(poste) <span class="kw">AS</span> nb_non_nulle</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe;</span></code></pre></div>
+</section>
+<section id="compter-les-valeurs-distinctes-dans-une-colonne" class="slide level2">
+<h2>Compter les valeurs distinctes dans une colonne</h2>
+<ul>
+<li>Comptez combien de positions différentes il y a dans la table <strong>employe</strong></li>
+<li>Nommez la colonne <strong> positions_distinctes</strong></li>
+</ul>
+</section>
+<section id="compter-les-valeurs-distinctes-dans-une-colonne-1" class="slide level2">
+<h2>Compter les valeurs distinctes dans une colonne</h2>
+<div class="sourceCode" id="cb34"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="kw">DISTINCT</span> poste) <span class="kw">AS</span> positions_distinctes</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe;</span></code></pre></div>
+</section>
+<section id="les-fonctions-dagrégation" class="slide level2">
+<h2>les fonctions d’agrégation</h2>
+<p>SUM() - pour additionner les valeurs de chaque cellule de la colonne AVG() - pour calculer la valeur moyenne de la colonne MIN() - pour obtenir la plus petite valeur de la colonne MAX() - pour obtenir la plus grande valeur de la colonne</p>
+</section>
+<section id="trouvez-la-valeur-minimale-et-maximale" class="slide level2">
+<h2>Trouvez la valeur minimale et maximale</h2>
+<p>Sélectionnez le salaire le plus élevé dans la table <strong>employe</strong></p>
+</section>
+<section id="trouvez-la-valeur-minimale-et-maximale-1" class="slide level2">
+<h2>Trouvez la valeur minimale et maximale</h2>
+<div class="sourceCode" id="cb35"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">MAX</span>(salaire) <span class="kw">FROM</span> employe;</span></code></pre></div>
+</section>
+<section id="trouver-la-valeur-moyenne" class="slide level2">
+<h2>Trouver la valeur moyenne</h2>
+<p>Trouvez le salaire moyen dans la table <strong>employe</strong> pour l’année 2013</p>
+</section>
+<section id="trouver-la-valeur-moyenne-1" class="slide level2">
+<h2>Trouver la valeur moyenne</h2>
+<div class="sourceCode" id="cb36"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">AVG</span>(salaire)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe <span class="kw">where</span> annee <span class="op">=</span> <span class="dv">2013</span>;</span></code></pre></div>
+</section>
+<section id="trouver-la-somme" class="slide level2">
+<h2>Trouver la somme</h2>
+<ul>
+<li>Trouvez la somme de tous les salaires du département Marketing en 2014</li>
+<li>N’oubliez pas de mettre le nom du département entre apostrophes !</li>
+</ul>
+</section>
+<section id="trouver-la-somme-1" class="slide level2">
+<h2>Trouver la somme</h2>
+<div class="sourceCode" id="cb37"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">SUM</span>(salaire)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> annee <span class="op">=</span> <span class="dv">2014</span> <span class="kw">AND</span> departement <span class="op">=</span> <span class="st">&#39;Marketing&#39;</span>;</span></code></pre></div>
+</section>
+<section id="regrouper-les-lignes-et-les-compter" class="slide level2">
+<h2>Regrouper les lignes et les compter</h2>
+<ul>
+<li>Trouvez le nombre d’employés dans chaque service au cours de l’année 2013</li>
+<li>Indiquez le nom du service et le nombre d’employés</li>
+<li>Nommez la deuxième colonne nb_employe</li>
+</ul>
+</section>
+<section id="regrouper-les-lignes-et-les-compter-1" class="slide level2">
+<h2>Regrouper les lignes et les compter</h2>
+<div class="sourceCode" id="cb38"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> departement, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> nb_employe</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe <span class="kw">where</span> annee <span class="op">=</span> <span class="st">&#39;2013&#39;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> departement;</span></code></pre></div>
+</section>
+<section id="trouver-les-valeurs-minimales-et-maximales-dans-des-groupes" class="slide level2">
+<h2>Trouver les valeurs minimales et maximales dans des groupes</h2>
+<p>Affichez tous les départements ensemble avec leur salaire le plus bas et le plus élevé en 2014</p>
+</section>
+<section id="trouver-les-valeurs-minimales-et-maximales-dans-des-groupes-1" class="slide level2">
+<h2>Trouver les valeurs minimales et maximales dans des groupes</h2>
+<div class="sourceCode" id="cb39"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> departement, <span class="fu">MAX</span>(salaire), <span class="fu">MIN</span>(salaire)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> annee <span class="op">=</span> <span class="dv">2014</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> departement;</span></code></pre></div>
+</section>
+<section id="trouver-la-valeur-moyenne-dans-les-groupes" class="slide level2">
+<h2>Trouver la valeur moyenne dans les groupes</h2>
+<p>Pour chaque département, trouvez le salaire moyen en 2015</p>
+</section>
+<section id="trouver-la-valeur-moyenne-dans-les-groupes-1" class="slide level2">
+<h2>Trouver la valeur moyenne dans les groupes</h2>
+<div class="sourceCode" id="cb40"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> departement, <span class="fu">AVG</span>(salaire)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> annee <span class="op">=</span> <span class="dv">2015</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> departement;</span></code></pre></div>
+</section>
+<section id="regroupement-par-quelques-colonnes" class="slide level2">
+<h2>Regroupement par quelques colonnes</h2>
+<ul>
+<li>Trouvez le salaire moyen de chaque employé</li>
+<li>Affichez le nom de famille, le prénom et le salaire moyen</li>
+<li>Regroupez les résultats par le nom de famille et le prénom</li>
+</ul>
+</section>
+<section id="regroupement-par-quelques-colonnes-1" class="slide level2">
+<h2>Regroupement par quelques colonnes</h2>
+<div class="sourceCode" id="cb41"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> nom, prenom, <span class="fu">AVG</span>(salaire)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> nom, prenom;</span></code></pre></div>
+</section>
+<section id="filtrer-des-groupes" class="slide level2">
+<h2>Filtrer des groupes</h2>
+<ul>
+<li>Trouvez les employés ayant passé plus de deux ans dans l’entreprise</li>
+<li>Sélectionnez leur nom et leur prénom ainsi que le nombre d’années travaillées (nommez cette colonne annees)</li>
+</ul>
+</section>
+<section id="filtrer-des-groupes-1" class="slide level2">
+<h2>Filtrer des groupes</h2>
+<div class="sourceCode" id="cb42"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> nom, prenom, <span class="fu">COUNT</span>(<span class="kw">DISTINCT</span> annee) <span class="kw">AS</span> annees</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> nom, prenom</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="kw">HAVING</span> <span class="fu">COUNT</span>(<span class="kw">DISTINCT</span> annee) <span class="op">&gt;</span> <span class="dv">2</span>;</span></code></pre></div>
+<p>Notez que nous utilisons DISTINCT parce qu’un emploi peut changer au cours de l’année exemple :</p>
+<ul>
+<li>Informatique Olivia Pearson 2012 3000 Stagiaire</li>
+<li>Informatique Olivia Pearson 2012 4200 Développeur junior Olivia a changé de poste dans l’année 2012 donc sans le DISTINCIT 2 fois l’annee 2012</li>
+</ul>
+</section>
+<section id="filtrer-des-groupes---suite" class="slide level2">
+<h2>Filtrer des groupes - suite</h2>
+<p>Trouvez les départements où le salaire moyen en 2012 était supérieur à 3 000 $. Affichez le nom du département avec le salaire moyen</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> departement, <span class="fu">AVG</span>(salaire)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> annee <span class="op">=</span> <span class="dv">2012</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> departement</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="kw">HAVING</span> <span class="fu">AVG</span>(salaire) <span class="op">&gt;</span> <span class="dv">3000</span>;</span></code></pre></div>
+</section>
+<section id="ordonner-des-groupes" class="slide level2">
+<h2>Ordonner des groupes</h2>
+<p>Triez les employés en fonction de leurs salaires totaux. Les valeurs les plus élevées doivent apparaître en premier. Affichez le nom de famille, le prénom et la somme</p>
+</section>
+<section id="ordonner-des-groupes-1" class="slide level2">
+<h2>Ordonner des groupes</h2>
+<div class="sourceCode" id="cb44"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> nom, prenom, <span class="fu">SUM</span>(salaire)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> nom, prenom</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="fu">SUM</span>(salaire) <span class="kw">DESC</span>;</span></code></pre></div>
+</section>
+<section id="mettez-vos-compétences-en-pratique" class="slide level2">
+<h2>Mettez vos compétences en pratique</h2>
+<div style="font-size: 35px;">
+<ul>
+<li>Affichez les colonnes nom et prenom de la table <strong>employe</strong> avec le salaire moyen de chaque personne et le nombre d’années pendant lesquelles elle a travaillé dans l’entreprise</li>
+<li>Utilisez les alias suivants :
+<ul>
+<li>salaire_moyen pour le salaire moyen de chaque personne</li>
+<li>annees_travaillees pour le nombre d’années travaillées dans l’entreprise</li>
+</ul></li>
+<li>Ne faites s’afficher que les employés qui ont travaillé plus de deux ans dans l’entreprise</li>
+<li>Classez les résultats en fonction du salaire moyen dans l’ordre décroissant</li>
+</ul>
+</div>
+</section>
+<section id="mettez-vos-compétences-en-pratique-1" class="slide level2">
+<h2>Mettez vos compétences en pratique</h2>
+<div class="sourceCode" id="cb45"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> nom, prenom, <span class="fu">AVG</span>(salaire) <span class="kw">AS</span> salaire_moyen,</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">COUNT</span>(<span class="kw">DISTINCT</span> annee) <span class="kw">AS</span> annees_travaillees</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> employe</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> nom, prenom</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="kw">HAVING</span> <span class="fu">COUNT</span>(<span class="kw">DISTINCT</span> annee) <span class="op">&gt;</span> <span class="dv">2</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="fu">AVG</span>(salaire) <span class="kw">DESC</span>;</span></code></pre></div>
+</section>
+<section id="source-1" class="slide level2">
+<h2>SOURCE</h2>
+<p><a href="https://zestedesavoir.com/tutoriels/730/administrez-vos-bases-de-donnees-avec-mysql/948_mysql-et-les-bases-du-langage-sql/3932_selection-de-donnees/" target="_blank">Sélection des données</a></p>
+<!-- Use
+  pandoc -t revealjs -V theme=simple -s -o myslides.html presentation-git.md && chromium "file://$(pwd)/myslides.html?print-pdf"
+
+  pandoc -t revealjs -V theme=simple -V progress=true -V slideNumber=true -V spotlight=true --slide-level=2 -s -o myslides.html presentation-git.md && chromium "file://$(pwd)/myslides.html"
+
+-->
+<style>
+  .reveal h1 { font-size: 2em; }
+  .reveal h2 { font-size: 1.6em; }
+  .reveal h3 { font-size: 1.4em; }
+  .reveal h4 { font-size: 1.2em; }
+  .reveal h5 { font-size: 1.1em; }
+  .border { border: 1px solid #555; }
+  .reveal blockquote { width: 100% }
+  .reveal blockquote:before {
+    display: block;
+    padding-left: 10px;
+    content: "\201C";
+    font-size: 80px;
+    position: absolute;
+    left: -20px;
+    top: -20px;
+    color: #7a7a7a;
+  }
+  .reveal cite:before { content: "\2009 \2015 \2009"; }
+  .reveal cite { font-size: 80%; }
+  .reveal code {
+    width: 110%;
+    background-color: #eee;
+    border-radius: 3px;
+    font-family: courier, monospace;
+    padding: 0 5px;
+    font-size: 1.5em;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+
+  }
+</style>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>

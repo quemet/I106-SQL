@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Grégory Charmier">
+  <title>Module 106 - Interroger, traiter et assurer la maintenance des bases de données</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/solarized.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Module 106 - Interroger, traiter et assurer la maintenance des bases de données</h1>
+  <p class="author">Grégory Charmier</p>
+</section>
+
+<section>
+<section id="les-jointures" class="title-slide slide level1">
+<h1>Les jointures</h1>
+
+</section>
+<section id="les-2-tables-film-et-realisateur" class="slide level2">
+<h2>Les 2 tables : FILM et REALISATEUR</h2>
+<p><img data-src="./images/table-film.png" style="width:65.0%" /></p>
+<p><img data-src="./images/table-realisateur.png" style="width:55.0%" /></p>
+</section>
+<section id="travailler-avec-plusieurs-tables---approche-intuitive" class="slide level2">
+<h2>Travailler avec plusieurs tables - Approche intuitive</h2>
+<p>Nous savons qui a réalisé un film <u>spécifique</u> car il existe une colonne <strong>fkRealisateur</strong> dans la table <strong>film</strong></p>
+</section>
+<section id="travailler-avec-plusieurs-tables---approche-intuitive-1" class="slide level2">
+<h2>Travailler avec plusieurs tables - Approche intuitive</h2>
+<ul>
+<li>Si vous regardez ‘Minuit à Paris’, sa valeur <strong>idRealisateur</strong> est <strong>3</strong></li>
+<li>Nous pouvons donc consulter la table <strong>realisateur</strong> pour découvrir que l’identifiant <strong>3</strong> est attribué à <strong>Woody Allen</strong></li>
+<li>Et c’est ainsi que nous savons qu’il est le réalisateur</li>
+</ul>
+</section>
+<section id="travailler-avec-plusieurs-tables---approche-intuitive-2" class="slide level2">
+<h2>Travailler avec plusieurs tables - Approche intuitive</h2>
+<p>Comment afficher le contenu des 2 tables ?</p>
+<p>Naturellement, à partir de nos connaissances actuelles, nous ferions :</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> film, realisateur;</span></code></pre></div>
+<p>Le résultat, cependant, pourrait vous surprendre un tout petit peu. Vérifions-le.</p>
+</section>
+<section id="plusieurs-tables-dans-la-clause-from" class="slide level2">
+<h2>Plusieurs tables dans la clause FROM</h2>
+<p>Comme il y a <strong>8 films</strong> et <strong>5 réalisateurs</strong>, combien de lignes obtiendrons-nous dans notre résultat ? A votre Avis ?</p>
+</section>
+<section id="plusieurs-tables-dans-la-clause-from-1" class="slide level2">
+<h2>Plusieurs tables dans la clause FROM</h2>
+<p><img data-src="./images/select-2-tables.png" style="width:55.0%" /></p>
+<p><u>Remarque</u> : Ceci est le résultat partiel de la requête</p>
+</section>
+<section id="plusieurs-tables-dans-la-clause-from-2" class="slide level2">
+<h2>Plusieurs tables dans la clause FROM</h2>
+<ul>
+<li>Nous avons 40 lignes en tout, car le SQL prend chaque film et le lie à tous les réalisateurs possibles.</li>
+<li>Nous avons donc maintenant 8 * 5 = 40 lignes !</li>
+<li>En mathématiques, c’est le produit cartésien</li>
+</ul>
+</section>
+<section id="plusieurs-tables-dans-la-clause-from-3" class="slide level2">
+<h2>Plusieurs tables dans la clause FROM</h2>
+<ul>
+<li>Pourquoi cela s’est-il produit ?</li>
+<li>Le SQL ne sait pas quoi faire avec les résultats des deux tables, donc il vous a donné toutes les combinaisons possibles !</li>
+</ul>
+</section>
+<section id="jointure" class="slide level2">
+<h2>Jointure</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> film, realisateur</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> realisateur.idRealisateur <span class="op">=</span> film.fkRealisateur;</span></code></pre></div>
+</section>
+<section id="jointure-1" class="slide level2">
+<h2>Jointure</h2>
+<p><img data-src="./images/jointure1.png" style="width:95.0%" /></p>
+<p>Le résultat est plus clair maintenant !</p>
+</section>
+<section id="relier-des-tables-à-laide-de-join" class="slide level2">
+<h2>Relier des tables à l’aide de JOIN</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> table1</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> table2</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> condition</span></code></pre></div>
+</section>
+<section id="relier-des-tables-à-laide-de-join-1" class="slide level2">
+<h2>Relier des tables à l’aide de JOIN</h2>
+<p>Utilisez le mot clé <strong>JOIN … ON</strong> pour lier les lignes des tables <strong>film<strong> et </strong>realisateur</strong> de manière à ce qu’un film soit présenté avec son réalisateur</p>
+</section>
+<section id="relier-des-tables-à-laide-de-join-2" class="slide level2">
+<h2>Relier des tables à l’aide de JOIN</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> film</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> realisateur</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> film.fkRealisateur <span class="op">=</span> realisateur.idRealisateur;</span></code></pre></div>
+<p><img data-src="./images/jointure1.png" style="width:75.0%" /></p>
+<p>Le résultat est exactement identique !</p>
+</section>
+<section id="afficher-des-colonnes-spécifiques" class="slide level2">
+<h2>Afficher des colonnes spécifiques</h2>
+<p>Sélectionnez le nom du réalisateur et le titre du film dans les tables <strong>film</strong> et <strong>realisateur</strong> de manière à ce qu’un film soit affiché avec son réalisateur</p>
+</section>
+<section id="afficher-des-colonnes-spécifiques-1" class="slide level2">
+<h2>Afficher des colonnes spécifiques</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> realisateur.reaNomComplet, film.filTitre</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> film</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> realisateur</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> film.fkRealisateur <span class="op">=</span> realisateur.idRealisateur;</span></code></pre></div>
+<p><img data-src="./images/join-colonnes.png" style="width:45.0%" /></p>
+</section>
+<section id="faire-référence-à-des-colonnes-sans-nom-de-table" class="slide level2">
+<h2>Faire référence à des colonnes sans nom de table</h2>
+<ul>
+<li>Sélectionnez le nom du réalisateur et le titre du film dans les tables <strong>film</strong> et <strong>realisateur</strong> de manière à ce qu’un film soit affiché avec son réalisateur</li>
+<li>N’écrivez pas les noms des tables dans la clause SELECT</li>
+</ul>
+</section>
+<section id="faire-référence-à-des-colonnes-sans-nom-de-table-1" class="slide level2">
+<h2>Faire référence à des colonnes sans nom de table</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> reaNomComplet, filTitre</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> film</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> realisateur</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> film.fkRealisateur <span class="op">=</span> realisateur.idRealisateur;</span></code></pre></div>
+<p><img data-src="./images/join-colonnes.png" style="width:45.0%" /></p>
+</section>
+<section id="renommer-des-colonnes-avec-as" class="slide level2">
+<h2>Renommer des colonnes avec AS</h2>
+<p>Renommez la colonne <strong>filTitre</strong> en titre_du_film</p>
+</section>
+<section id="renommer-des-colonnes-avec-as-1" class="slide level2">
+<h2>Renommer des colonnes avec AS</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  filTitre <span class="kw">AS</span> titre_du_film,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  reaNomComplet</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> film</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> realisateur</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> film.fkRealisateur <span class="op">=</span> realisateur.idRealisateur;</span></code></pre></div>
+<p><img data-src="./images/join-renommer-colonnes.png" style="width:45.0%" /></p>
+</section>
+<section id="filtrer-les-tables-reliées" class="slide level2">
+<h2>Filtrer les tables reliées</h2>
+<ul>
+<li>Sélectionnez toutes les colonnes des tables <strong>film</strong> et <strong>realisateur</strong> de manière à ce qu’un film soit affiché avec son réalisateur</li>
+<li>Sélectionnez uniquement les films réalisés après 2000</li>
+<li>Dans la condition de jointure, la première table est <strong>film</strong> et la seconde est <strong>realisateur</strong></li>
+</ul>
+</section>
+<section id="filtrer-les-tables-reliées-1" class="slide level2">
+<h2>Filtrer les tables reliées</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> film</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> realisateur</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> film.fkRealisateur <span class="op">=</span> realisateur.idRealisateur</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> filAnneeProduction <span class="op">&gt;</span> <span class="dv">2000</span>;</span></code></pre></div>
+</section>
+<section id="filtrer-les-tables-reliées---suite" class="slide level2">
+<h2>Filtrer les tables reliées - suite</h2>
+<ul>
+<li>Sélectionnez toutes les colonnes des tables <strong>film</strong> et <strong>realisateur</strong> de manière à ce qu’un film soit affiché avec son réalisateur</li>
+<li>Sélectionnez uniquement les films qui ont été réalisés par Steven Spielberg</li>
+</ul>
+</section>
+<section id="filtrer-les-tables-reliées---suite-1" class="slide level2">
+<h2>Filtrer les tables reliées - suite</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> film</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> realisateur</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> film.fkRealisateur <span class="op">=</span> realisateur.idRealisateur</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> reaNomComplet <span class="op">=</span> <span class="st">&#39;Steven Spielberg&#39;</span>;</span></code></pre></div>
+</section>
+<section id="mettez-vos-compétences-en-pratique" class="slide level2">
+<h2>Mettez vos compétences en pratique</h2>
+<ul>
+<li>Sélectionnez les colonnes <strong>titre</strong> et <strong>annee_production</strong> de la table <strong>film</strong>, et les colonnes <strong>nom</strong> et <strong>annee_naissance</strong> de la table <strong>realisateur</strong> de manière à afficher un film et son réalisateur</li>
+<li>Renommez la colonne <strong>annee_naissance</strong> en né_en</li>
+<li>Sélectionnez uniquement les films qui ont été tournés lorsque leur réalisateur avait moins de 40 ans (la différence entre <strong>annee_production</strong> et <strong>annee_naissance</strong> doit être inférieure à 40)</li>
+</ul>
+</section>
+<section id="mettez-vos-compétences-en-pratique-1" class="slide level2">
+<h2>Mettez vos compétences en pratique</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  filTitre, filAnneeProduction,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  reaNomComplet, reaAnneeNaissance <span class="kw">AS</span> né_en</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> film</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> realisateur</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> film.fkRealisateur <span class="op">=</span> realisateur.idRealisateur</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> filAnneeProduction <span class="op">-</span> reaAnneeNaissance <span class="op">&lt;</span> <span class="dv">40</span>;</span></code></pre></div>
+</section>
+<section id="entraînement-complémentaire" class="slide level2">
+<h2>Entraînement complémentaire</h2>
+<ul>
+<li>Sélectionnez les colonnes <strong>id</strong>, <strong>titre</strong> et <strong>annee_production</strong> de la table <strong>film</strong> et les colonnes <strong>nom</strong> et <strong>annee_naissance</strong> de la table <strong>realisateur</strong> de manière à afficher un film et son réalisateur</li>
+<li>Renommez la colonne <strong>annee_naissance</strong> en <strong>né_en</strong> et la colonne <strong>annee_production</strong> en <strong>produit_en</strong></li>
+<li>Sélectionnez uniquement les films dont le titre contient la lettre ‘a’ et qui ont été tournés après 2000, ou dont le réalisateur est né entre 1945 et 1995</li>
+</ul>
+</section>
+<section id="entraînement-complémentaire-1" class="slide level2">
+<h2>Entraînement complémentaire</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> film.idFilm, filTitre,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>filAnneeProduction <span class="kw">AS</span> produit_en,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>reaNomComplet, reaAnneeNaissance <span class="kw">AS</span> né_en</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> film</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> realisateur</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> film.fkRealisateur <span class="op">=</span> realisateur.idRealisateur</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> (filTitre <span class="kw">LIKE</span> <span class="st">&#39;%a%&#39;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> filAnneeProduction <span class="op">&gt;</span> <span class="dv">2000</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="kw">OR</span> reaAnneeNaissance <span class="kw">BETWEEN</span> <span class="dv">1945</span> <span class="kw">AND</span> <span class="dv">1995</span>;</span></code></pre></div>
+<p><img data-src="./images/entrainement-complementaire-jointure.png" style="width:45.0%" /></p>
+</section>
+<section id="source" class="slide level2">
+<h2>Source</h2>
+<p><a href="https://zestedesavoir.com/tutoriels/730/administrez-vos-bases-de-donnees-avec-mysql/949_index-jointures-et-sous-requetes/3937_jointures/" target="_blank">Les jointures</a></p>
+</section></section>
+<section>
+<section id="gestion-des-utilisateurs" class="title-slide slide level1">
+<h1>Gestion des utilisateurs</h1>
+
+</section>
+<section id="notion-dutilisateur" class="slide level2">
+<h2>Notion d’utilisateur</h2>
+<ul>
+<li>MySQL est un serveur et pour se connecter à ce serveur, on a besoin d’un <strong>utilisateur</strong> !</li>
+<li>Un utilisateur s’identifie lors de la connexion à la base de données</li>
+</ul>
+</section>
+<section id="notion-dutilisateur-1" class="slide level2">
+<h2>Notion d’utilisateur</h2>
+<p>Par défaut, avec MySQL, on utilise le user <strong>root</strong></p>
+</section>
+<section id="voir-la-liste-des-utilisateurs" class="slide level2">
+<h2>Voir la liste des utilisateurs</h2>
+<p>Pour voir la liste des utilisateurs, il faut commencer par se connecter à la DB :</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mysql <span class="op">-</span>u root <span class="op">-</span>p <span class="co">--ssl-mode=DISABLED</span></span></code></pre></div>
+</section>
+<section id="voir-la-liste-des-utilisateurs-1" class="slide level2">
+<h2>Voir la liste des utilisateurs</h2>
+<p>Ensuite, afficher la liste des bases de données :</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>SHOW DATABASES;</span></code></pre></div>
+<p><img data-src="./images/voir-liste-users1.png" style="width:35.0%" /></p>
+</section>
+<section id="voir-la-liste-des-utilisateurs-2" class="slide level2">
+<h2>Voir la liste des utilisateurs</h2>
+<p>Pour la base de données <strong>mysql</strong>, afficher les différentes tables.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">USE</span> mysql;</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>SHOW <span class="kw">TABLES</span>;</span></code></pre></div>
+<p>nous permet de voir l’existence d’une table <strong>user</strong></p>
+</section>
+<section id="voir-la-liste-des-utilisateurs-3" class="slide level2">
+<h2>Voir la liste des utilisateurs</h2>
+<p>Pour la table <strong>user</strong>, afficher les différents champs.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">DESC</span> <span class="fu">user</span>;</span></code></pre></div>
+<p>nous permet de voir l’existence d’un attribut (ou champ ou colonne) <strong>user</strong></p>
+</section>
+<section id="voir-la-liste-des-utilisateurs-4" class="slide level2">
+<h2>Voir la liste des utilisateurs</h2>
+<p>Ok maintenant, on sait qu’il existe un attribut (ou champ ou colonne) <strong>user</strong> dans la table <strong>user</strong> de la base de données <strong>mysql</strong> !</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">user</span> <span class="kw">FROM</span> mysql.<span class="fu">user</span>;</span></code></pre></div>
+<p><img data-src="./images/voir-liste-users2.png" style="width:50.0%" /></p>
+</section>
+<section id="voir-lutilisateur-courant-connecté" class="slide level2">
+<h2>Voir l’utilisateur courant = connecté</h2>
+<p><img data-src="./images/voir-liste-users3.png" style="width:55.0%" /></p>
+</section>
+<section id="créer-un-utilisateur" class="slide level2">
+<h2>Créer un utilisateur</h2>
+<p>L’utilisateur possède 3 informations principales :</p>
+<ul>
+<li>Son nom</li>
+<li>Le host depuis lequel il a le droit de se connecter</li>
+<li>Son mot de passe</li>
+</ul>
+</section>
+<section id="créer-un-utilisateur-1" class="slide level2">
+<h2>Créer un utilisateur</h2>
+<p><img data-src="./images/creer-un-user.png" style="width:95.0%" /></p>
+</section>
+<section id="supprimer-un-utilisateur" class="slide level2">
+<h2>Supprimer un utilisateur</h2>
+<p><img data-src="./images/supprimer-un-user.png" style="width:55.0%" /></p>
+</section>
+<section id="question" class="slide level2">
+<h2>Question ?</h2>
+<p>Pourquoi devons nous utiliser les ’’ dans les commandes précédentes ?</p>
+</section>
+<section id="réponse" class="slide level2">
+<h2>Réponse</h2>
+<p>Pour entourer (wrapper) la chaine de caractères qui pourait contenir des caractères spéciaux.</p>
+</section>
+<section id="notion-de-privilèges" class="slide level2">
+<h2>Notion de privilèges</h2>
+<p>Chaque utilisateur possède des <strong>privilèges</strong>, c’est-à-dire des droits relatifs aux données de la base :</p>
+<ul>
+<li>Sélection des données</li>
+<li>Modification des données</li>
+<li>Création des objets</li>
+<li>Etc…</li>
+</ul>
+<p>et cela sur certaines bases de données ou certaines tables</p>
+</section>
+<section id="privilèges-par-défaut" class="slide level2">
+<h2>Privilèges par défaut</h2>
+<p>Un utilisateur créée ne peut rien faire</p>
+<p><img data-src="./images/utilisateur-par-defaut.png" style="width:155.0%" /></p>
+</section>
+<section id="voir-les-privilèges" class="slide level2">
+<h2>Voir les privilèges</h2>
+<p>Par défaut, un utilisateur ne possède que le niveau de privilège <strong>USAGE</strong> qui correspond à <strong>“aucun privilège”</strong></p>
+<p><img data-src="./images/voir-privileges.png" style="width:75.0%" /></p>
+</section>
+<section id="accorder-des-privilèges" class="slide level2">
+<h2>Accorder des privilèges</h2>
+</section>
+<section id="la-commande-grant" class="slide level2">
+<h2>La commande GRANT</h2>
+<p>GRANT permet de donner des droits !</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> [privilèges]</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> [base de donnée].[<span class="kw">table</span>]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="kw">TO</span> [utilisateur];</span></code></pre></div>
+</section>
+<section id="la-commande-grant-1" class="slide level2">
+<h2>La commande GRANT</h2>
+<p>Nous souhaitons donner le droit de créer des tables, des bases de données à l’utilisateur <strong>greg</strong></p>
+<p><img data-src="./images/donner-droit-create.png" style="width:75.0%" /></p>
+</section>
+<section id="vérification" class="slide level2">
+<h2>Vérification</h2>
+<p>Vérifions que l’utilisateur <strong>greg</strong> peut créer, par exemple, une base de données :</p>
+<p><img data-src="./images/create-db-by-greg.png" style="width:65.0%" /></p>
+</section>
+<section id="la-commande-grant-2" class="slide level2">
+<h2>La commande GRANT</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span> <span class="kw">ON</span> <span class="op">*</span>.<span class="op">*</span> <span class="kw">TO</span> <span class="st">&#39;greg&#39;</span>@<span class="st">&#39;localhost&#39;</span>;</span></code></pre></div>
+<ul>
+<li>Cette commande donne tous les privilèges à l’utilisateur “greg” à l’exception de <strong>GRANT OPTION</strong></li>
+<li>Cela signifie que l’utilisateur “greg” ne pourra pas donner des privilèges à d’autres utilisateurs</li>
+</ul>
+</section>
+<section id="la-commande-grant-3" class="slide level2">
+<h2>La commande GRANT</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> <span class="op">*</span>.<span class="op">*</span> <span class="kw">TO</span> <span class="st">&#39;greg&#39;</span>@<span class="st">&#39;localhost&#39;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> <span class="kw">GRANT</span> <span class="kw">OPTION</span>;</span></code></pre></div>
+<p>Cette commande donne tous les privilèges à l’utilisateur “greg” y compris le privilège GRANT</p>
+</section>
+<section id="la-commande-flush-privileges" class="slide level2">
+<h2>La commande FLUSH PRIVILEGES</h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">FLUSH</span> <span class="kw">PRIVILEGES</span></span></code></pre></div>
+<p>Cette commande demande au serveur MySQL de recharger l’ensemble des privilèges</p>
+</section>
+<section id="la-commande-flush-privileges-1" class="slide level2">
+<h2>La commande FLUSH PRIVILEGES</h2>
+<p>En utilisant la commande <strong>GRANT</strong> vous n’avez pas besoin de la commande <strong>FLUSH PRIVILEGES</strong> car MySQL est notifié des changements et va recharger les tables <strong>GRANT</strong> immédiatement</p>
+</section>
+<section id="la-commande-flush-privileges-2" class="slide level2">
+<h2>La commande FLUSH PRIVILEGES</h2>
+<p>Par contre, vous avez besoin de cette commande :</p>
+<ul>
+<li>si vous modifiez les privilèges à l’aide de INSERT, UPDATE, DELETE (non recommandé)</li>
+<li>avec d’ancienne version de MySQL</li>
+<li>avec d’autres SGBDR comme MariaDB</li>
+</ul>
+</section>
+<section id="retirer-des-privilèges" class="slide level2">
+<h2>Retirer des privilèges</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">REVOKE</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span> <span class="kw">ON</span> <span class="op">*</span>.<span class="op">*</span> <span class="kw">FROM</span> <span class="st">&#39;greg&#39;</span>@<span class="st">&#39;localhost&#39;</span>;</span></code></pre></div>
+<ul>
+<li>Il faut changer <strong>GRANT</strong> par <strong>REVOKE</strong></li>
+<li>Et <strong>TO</strong> par <strong>FROM</strong></li>
+</ul>
+</section>
+<section id="les-privilèges" class="slide level2">
+<h2>Les privilèges</h2>
+<p><img data-src="./images/privileges.png" style="width:75.0%" /></p>
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/grant.html" target="_blank">Doc mysql</a></p>
+</section>
+<section id="les-différents-niveaux-dapplication-des-privilèges" class="slide level2">
+<h2>Les différents niveaux d’application des privilèges</h2>
+<p><img data-src="./images/niveau-privileges.png" style="width:75.0%" /></p>
+</section>
+<section id="exemple-1" class="slide level2">
+<h2>Exemple 1</h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> nation.countries <span class="kw">TO</span> <span class="st">&#39;paul&#39;</span>@<span class="st">&#39;localhost&#39;</span>;</span></code></pre></div>
+</section>
+<section id="exemple-1-1" class="slide level2">
+<h2>Exemple 1</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> nation.countries <span class="kw">TO</span> <span class="st">&#39;paul&#39;</span>@<span class="st">&#39;localhost&#39;</span>;</span></code></pre></div>
+<p>L’utilisateur <strong>paul</strong> aura le privilège <strong>SELECT</strong> sur la table <strong>countries</strong> de la base de données <strong>nation</strong></p>
+</section>
+<section id="exemple-2" class="slide level2">
+<h2>Exemple 2</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> db_movies;</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span> <span class="kw">ON</span> <span class="op">*</span> <span class="kw">TO</span> <span class="st">&#39;paul&#39;</span>@<span class="st">&#39;localhost&#39;</span>;</span></code></pre></div>
+</section>
+<section id="exemple-2-1" class="slide level2">
+<h2>Exemple 2</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">use</span> db_movies;</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span> <span class="kw">ON</span> <span class="op">*</span> <span class="kw">TO</span> <span class="st">&#39;paul&#39;</span>@<span class="st">&#39;localhost&#39;</span>;</span></code></pre></div>
+<p>L’utilisateur <strong>paul</strong> aura tous privilèges (sauf <strong>GRANT</strong>) sur la base de données <strong>db_movies</strong></p>
+</section>
+<section id="gestion-des-rôles" class="slide level2">
+<h2>Gestion des rôles</h2>
+</section>
+<section id="notion-de-rôle" class="slide level2">
+<h2>Notion de rôle</h2>
+<p>Un <strong>rôle</strong> permet de déterminer le “profil” d’un groupe de personnes à qui l’on souhaite attribuer des privilèges</p>
+<p>Ex: développeur, administrateur, consultant, etc</p>
+</section>
+<section id="notion-de-rôle-1" class="slide level2">
+<h2>Notion de rôle</h2>
+<ul>
+<li><p>Tout comme les privilèges, les rôles permettent de restreindre ou d’augmenter l’accès à certains objets de nos bases de données à nos utilisateurs</p></li>
+<li><p>En fait, un ROLE est un <strong>ensemble de privilèges</strong> qui peut être attribué à plusieurs utilisateurs de façon simultanée</p></li>
+<li><p>Cela permet de gérer les privilèges de vos utilisateurs de façon plus simple et rapide</p></li>
+</ul>
+</section>
+<section id="créer-un-rôle" class="slide level2">
+<h2>Créer un rôle</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">ROLE</span> <span class="st">&#39;consultant&#39;</span>;</span></code></pre></div>
+</section>
+<section id="définir-les-privilèges-de-ce-rôle" class="slide level2">
+<h2>Définir les privilèges de ce rôle</h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> SHOW DATABASES, <span class="kw">SELECT</span> <span class="kw">ON</span> <span class="op">*</span>.<span class="op">*</span> <span class="kw">TO</span> <span class="st">&#39;consultant&#39;</span>;</span></code></pre></div>
+</section>
+<section id="donner-le-rôle-consultant-à-des-utilisateurs" class="slide level2">
+<h2>Donner le rôle consultant à des utilisateurs</h2>
+<div class="sourceCode" id="cb28"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="st">&#39;consultant&#39;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">TO</span> <span class="st">&#39;consultant-pierre&#39;</span>@<span class="st">&#39;localhost&#39;</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;consultant-marc&#39;</span>@<span class="st">&#39;localhost&#39;</span>;</span></code></pre></div>
+<p>Les utilisateurs doivent exister !</p>
+</section>
+<section id="supprimer-un-rôle" class="slide level2">
+<h2>Supprimer un rôle</h2>
+<div class="sourceCode" id="cb29"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">ROLE</span> <span class="st">&#39;consultant&#39;</span>;</span></code></pre></div>
+</section>
+<section id="source-1" class="slide level2">
+<h2>SOURCE</h2>
+<p><a href="https://zestedesavoir.com/tutoriels/730/administrez-vos-bases-de-donnees-avec-mysql/954_gestion-des-utilisateurs-et-configuration-du-serveur/3962_gestion-des-utilisateurs/" target="_blank">Gestion des utilisateurs</a></p>
+<!-- Use
+  pandoc -t revealjs -V theme=simple -s -o myslides.html presentation-git.md && chromium "file://$(pwd)/myslides.html?print-pdf"
+
+  pandoc -t revealjs -V theme=simple -V progress=true -V slideNumber=true -V spotlight=true --slide-level=2 -s -o myslides.html presentation-git.md && chromium "file://$(pwd)/myslides.html"
+
+-->
+<style>
+  .reveal h1 { font-size: 2em; }
+  .reveal h2 { font-size: 1.6em; }
+  .reveal h3 { font-size: 1.4em; }
+  .reveal h4 { font-size: 1.2em; }
+  .reveal h5 { font-size: 1.1em; }
+  .border { border: 1px solid #555; }
+  .reveal blockquote { width: 100% }
+  .reveal blockquote:before {
+    display: block;
+    padding-left: 10px;
+    content: "\201C";
+    font-size: 80px;
+    position: absolute;
+    left: -20px;
+    top: -20px;
+    color: #7a7a7a;
+  }
+  .reveal cite:before { content: "\2009 \2015 \2009"; }
+  .reveal cite { font-size: 80%; }
+  .reveal code {
+    width: 120%;
+    background-color: #eee;
+    border-radius: 3px;
+    font-family: courier, monospace;
+    padding: 0 5px;
+    font-size: 1.5em;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+
+  }
+</style>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
